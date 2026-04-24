@@ -1,13 +1,5 @@
-from checker import check_password_strength, check_breach, calculate_entropy
+from checker import check_breach, calculate_entropy, generate_suggestions
 
-def display_strength(score):
-    if score < 40:
-        return "Weak"
-    elif score < 70:
-        return "Medium"
-    else:
-        return "Strong"
-    
 def entropy_level(entropy):
     if entropy < 30:
         return "Weak"
@@ -19,23 +11,27 @@ def entropy_level(entropy):
 def main():
     password = input("Enter your password: ")
 
-    score, feedback = check_password_strength(password)
-    breach_count = check_breach(password)
     entropy = calculate_entropy(password)
+    breach_count = check_breach(password)
+    suggestions = generate_suggestions(password, entropy)
 
-    print(f"\nScore: {score}/100")
-    print(f"Entropy: {entropy}")
-    print(f"Entropy Level: {entropy_level(entropy)}")
+    print("\n========================")
 
-    if breach_count:
-        print(f"⚠️ This password was found {breach_count} times in data breaches!")
+    print(f"Entropy: {entropy} bits")
+    print(f"Strength: {entropy_level(entropy)}")
+
+    if breach_count > 0:
+        print(f"\n❌ COMPROMISED PASSWORD")
+        print(f"Found {breach_count} times in data breaches")
     else:
-        print("✅ This password was NOT found in known breaches")
+        print("\n✅ Not found in known breaches")
 
-    if feedback:
+    if suggestions:
         print("\nSuggestions:")
-        for f in feedback:
-            print(f"- {f}")
+        for s in suggestions:
+            print(f"- {s}")
+
+    print("========================\n")
 
 if __name__ == "__main__":
     main()
